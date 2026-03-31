@@ -11,12 +11,12 @@ public record Kit(String id, String displayName, String permission, List<ItemSta
                   List<PotionEffect> effects) {
 
     public Kit(
-        String id,
-        String displayName,
-        String permission,
-        List<ItemStack> items,
-        List<ItemStack> armor,
-        List<PotionEffect> effects
+        final String id,
+        final String displayName,
+        final String permission,
+        final List<ItemStack> items,
+        final List<ItemStack> armor,
+        final List<PotionEffect> effects
     ) {
         this.id = id;
         this.displayName = displayName;
@@ -41,13 +41,13 @@ public record Kit(String id, String displayName, String permission, List<ItemSta
         return Collections.unmodifiableList(effects);
     }
 
-    public boolean canUse(CommandSender sender) {
+    public boolean canUse(final CommandSender sender) {
         return permission == null || permission.isBlank() || sender.hasPermission(permission);
     }
 
-    private static List<ItemStack> copyItems(List<ItemStack> source) {
-        List<ItemStack> clone = new ArrayList<>(source.size());
-        for (ItemStack itemStack : source) {
+    private static List<ItemStack> copyItems(final List<ItemStack> source) {
+        final List<ItemStack> clone = new ArrayList<>(source.size());
+        for (final ItemStack itemStack : source) {
             clone.add(itemStack.clone());
         }
         return clone;

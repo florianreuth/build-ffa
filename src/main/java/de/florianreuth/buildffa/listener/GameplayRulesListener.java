@@ -27,15 +27,15 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 public final class GameplayRulesListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
-    public void onFoodChange(FoodLevelChangeEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
+    public void onFoodChange(final FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof final Player player)) {
             return;
         }
 
         event.setCancelled(true);
         if (player.getFoodLevel() < 20) {
             player.setFoodLevel(20);
-            player.setSaturation(20f);
+            player.setSaturation(20F);
         }
     }
 
@@ -44,6 +44,7 @@ public final class GameplayRulesListener implements Listener {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
+
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL ||
             event.getCause() == EntityDamageEvent.DamageCause.FIRE ||
             event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK ||
@@ -53,5 +54,6 @@ public final class GameplayRulesListener implements Listener {
             event.setCancelled(true);
         }
     }
+
 }
 

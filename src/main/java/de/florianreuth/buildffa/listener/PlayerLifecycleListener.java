@@ -27,11 +27,11 @@ public final class PlayerLifecycleListener implements Listener {
     private final HudService hudService;
 
     public PlayerLifecycleListener(
-        BuildFFA plugin,
-        MatchService matchService,
-        PlayerDataService playerDataService,
-        GadgetService gadgetService,
-        HudService hudService
+        final BuildFFA plugin,
+        final MatchService matchService,
+        final PlayerDataService playerDataService,
+        final GadgetService gadgetService,
+        final HudService hudService
     ) {
         this.plugin = plugin;
         this.matchService = matchService;
@@ -41,23 +41,20 @@ public final class PlayerLifecycleListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+    public void onJoin(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+
         playerDataService.get(player.getUniqueId());
         matchService.preparePlayer(player, true);
         gadgetService.giveSelectedGadget(player);
         hudService.refreshPlayer(player);
-        Branding.send(
-            player,
-            Component.text("Use ", NamedTextColor.GRAY)
-                .append(Component.text("/kit", NamedTextColor.YELLOW))
-                .append(Component.text(" to switch kits.", NamedTextColor.GRAY))
-        );
+        Branding.send(player, Component.text("Use ", NamedTextColor.GRAY).append(Component.text("/kit",
+            NamedTextColor.YELLOW)).append(Component.text(" to switch kits.", NamedTextColor.GRAY)));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity();
+    public void onDeath(final PlayerDeathEvent event) {
+        final Player victim = event.getEntity();
         Player killer = victim.getKiller();
         if (killer == null) {
             killer = matchService.resolveRecentAttacker(victim);
@@ -65,14 +62,11 @@ public final class PlayerLifecycleListener implements Listener {
 
         matchService.handleDeath(victim);
         if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
-            int streak = matchService.handleKill(killer);
+            final int streak = matchService.handleKill(killer);
             Branding.send(killer, Component.text("Kill +1 | Streak: " + streak, NamedTextColor.GREEN));
-            Bukkit.getServer().broadcast(
-                Branding.PREFIX
-                    .append(Component.text(killer.getName(), NamedTextColor.RED))
-                    .append(Component.text(" killed ", NamedTextColor.GRAY))
-                    .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
-            );
+            Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
+                .append(Component.text(" killed ", NamedTextColor.GRAY))
+                .append(Component.text(victim.getName(), NamedTextColor.YELLOW)));
             hudService.refreshPlayer(killer);
         }
         hudService.refreshPlayer(victim);
@@ -82,29 +76,27 @@ public final class PlayerLifecycleListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onVoidDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player victim)) {
+    public void onVoidDamage(final EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof final Player victim)) {
             return;
         }
+
         if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
             return;
         }
 
         event.setCancelled(true);
 
-        Player killer = matchService.resolveRecentAttacker(victim);
+        final Player killer = matchService.resolveRecentAttacker(victim);
         matchService.handleDeath(victim);
 
         if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
-            int streak = matchService.handleKill(killer);
+            final int streak = matchService.handleKill(killer);
             Branding.send(killer, Component.text("Void kill +1 | Streak: " + streak, NamedTextColor.GREEN));
-            Bukkit.getServer().broadcast(
-                Branding.PREFIX
-                    .append(Component.text(killer.getName(), NamedTextColor.RED))
-                    .append(Component.text(" knocked ", NamedTextColor.GRAY))
-                    .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
-                    .append(Component.text(" into the void", NamedTextColor.GRAY))
-            );
+            Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
+                .append(Component.text(" knocked ", NamedTextColor.GRAY))
+                .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
+                .append(Component.text(" into the void", NamedTextColor.GRAY)));
             hudService.refreshPlayer(killer);
         }
 
@@ -114,17 +106,15 @@ public final class PlayerLifecycleListener implements Listener {
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
+    public void onRespawn(final PlayerRespawnEvent event) {
+        final Player player = event.getPlayer();
         event.setRespawnLocation(matchService.resolveSpawn(player));
 
         // Delayed re-gear avoids clashes with other respawn handlers.
-        player.getServer().getScheduler().runTaskLater(plugin, () ->
-            {
-                matchService.preparePlayer(player, false);
-                gadgetService.giveSelectedGadget(player);
-                hudService.refreshPlayer(player);
-            }, 1L
-        );
+        player.getServer().getScheduler().runTaskLater(plugin, () -> {
+            matchService.preparePlayer(player, false);
+            gadgetService.giveSelectedGadget(player);
+            hudService.refreshPlayer(player);
+        }, 1L);
     }
 }

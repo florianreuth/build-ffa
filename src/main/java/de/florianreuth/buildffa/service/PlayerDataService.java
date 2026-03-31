@@ -17,7 +17,7 @@ public final class PlayerDataService {
     private final File file;
     private final Map<UUID, PlayerStats> statsByPlayer = new ConcurrentHashMap<>();
 
-    public PlayerDataService(BuildFFA plugin) {
+    public PlayerDataService(final BuildFFA plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "stats.yml");
     }
@@ -28,8 +28,8 @@ public final class PlayerDataService {
             return;
         }
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        for (String key : config.getKeys(false)) {
+        final YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (final String key : config.getKeys(false)) {
             UUID uuid;
             try {
                 uuid = UUID.fromString(key);
@@ -37,7 +37,7 @@ public final class PlayerDataService {
                 continue;
             }
 
-            PlayerStats stats = new PlayerStats();
+            final PlayerStats stats = new PlayerStats();
             stats.setKills(config.getInt(key + ".kills", 0));
             stats.setDeaths(config.getInt(key + ".deaths", 0));
             stats.setCurrentKillStreak(config.getInt(key + ".currentKillStreak", 0));
@@ -49,10 +49,10 @@ public final class PlayerDataService {
     }
 
     public void save() {
-        YamlConfiguration config = new YamlConfiguration();
-        for (Map.Entry<UUID, PlayerStats> entry : statsByPlayer.entrySet()) {
-            String key = entry.getKey().toString();
-            PlayerStats stats = entry.getValue();
+        final YamlConfiguration config = new YamlConfiguration();
+        for (final Map.Entry<UUID, PlayerStats> entry : statsByPlayer.entrySet()) {
+            final String key = entry.getKey().toString();
+            final PlayerStats stats = entry.getValue();
             config.set(key + ".kills", stats.getKills());
             config.set(key + ".deaths", stats.getDeaths());
             config.set(key + ".currentKillStreak", stats.getCurrentKillStreak());
@@ -63,16 +63,16 @@ public final class PlayerDataService {
 
         try {
             config.save(file);
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             plugin.getLogger().severe("Could not save stats.yml: " + exception.getMessage());
         }
     }
 
-    public PlayerStats get(UUID uuid) {
+    public PlayerStats get(final UUID uuid) {
         return statsByPlayer.computeIfAbsent(uuid, ignored -> new PlayerStats());
     }
 
-    public List<Map.Entry<UUID, PlayerStats>> getTopByKills(int limit) {
+    public List<Map.Entry<UUID, PlayerStats>> getTopByKills(final int limit) {
         return statsByPlayer
             .entrySet()
             .stream()
@@ -80,5 +80,6 @@ public final class PlayerDataService {
             .limit(Math.max(1, limit))
             .toList();
     }
+
 }
 

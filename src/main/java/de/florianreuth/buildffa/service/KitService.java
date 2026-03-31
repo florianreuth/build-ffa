@@ -29,7 +29,7 @@ public final class KitService {
     private final File file;
     private final Map<String, Kit> kits = new LinkedHashMap<>();
 
-    public KitService(BuildFFA plugin) {
+    public KitService(final BuildFFA plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "kits.yml");
     }
@@ -40,25 +40,25 @@ public final class KitService {
             return;
         }
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection section = config.getConfigurationSection("kits");
+        final YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        final ConfigurationSection section = config.getConfigurationSection("kits");
         if (section == null) {
             return;
         }
 
-        for (String kitId : section.getKeys(false)) {
-            ConfigurationSection kitSection = section.getConfigurationSection(kitId);
+        for (final String kitId : section.getKeys(false)) {
+            final ConfigurationSection kitSection = section.getConfigurationSection(kitId);
             if (kitSection == null) {
                 continue;
             }
 
-            List<ItemStack> items = parseItems(kitSection.getStringList("items"));
-            List<ItemStack> armor = parseItems(kitSection.getStringList("armor"));
-            List<PotionEffect> effects = parseEffects(kitSection.getStringList("effects"));
-            String displayName = LEGACY.serialize(LEGACY.deserialize(kitSection.getString("name", kitId)));
-            String permission = kitSection.getString("permission", "");
+            final List<ItemStack> items = parseItems(kitSection.getStringList("items"));
+            final List<ItemStack> armor = parseItems(kitSection.getStringList("armor"));
+            final List<PotionEffect> effects = parseEffects(kitSection.getStringList("effects"));
+            final String displayName = LEGACY.serialize(LEGACY.deserialize(kitSection.getString("name", kitId)));
+            final String permission = kitSection.getString("permission", "");
 
-            Kit kit = new Kit(kitId.toLowerCase(Locale.ROOT), displayName, permission, items, armor, effects);
+            final Kit kit = new Kit(kitId.toLowerCase(Locale.ROOT), displayName, permission, items, armor, effects);
             kits.put(kit.id(), kit);
         }
     }
@@ -71,12 +71,12 @@ public final class KitService {
         return Collections.unmodifiableMap(kits);
     }
 
-    public Optional<Kit> getKit(String id) {
+    public Optional<Kit> getKit(final String id) {
         return Optional.ofNullable(kits.get(id.toLowerCase(Locale.ROOT)));
     }
 
     public Optional<Kit> getDefaultKit() {
-        String configured = plugin.getConfig().getString("default-kit", "");
+        final String configured = plugin.getConfig().getString("default-kit", "");
         if (!configured.isBlank()) {
             Kit configuredKit = kits.get(configured.toLowerCase(Locale.ROOT));
             if (configuredKit != null) {
@@ -86,25 +86,27 @@ public final class KitService {
 
         if (kits.isEmpty()) {
             return Optional.empty();
+        } else {
+            return Optional.of(kits.values().iterator().next());
         }
-        return Optional.of(kits.values().iterator().next());
     }
 
-    public List<Kit> getAvailableKits(Player player) {
+    public List<Kit> getAvailableKits(final Player player) {
         return kits.values().stream().filter(kit -> kit.canUse(player)).collect(Collectors.toList());
     }
 
-    public void applyKit(Player player, Kit kit) {
-        PlayerInventory inventory = player.getInventory();
+    public void applyKit(final Player player, final Kit kit) {
+        final PlayerInventory inventory = player.getInventory();
         inventory.clear();
         inventory.setArmorContents(new ItemStack[4]);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
 
-        for (ItemStack itemStack : kit.items()) {
+        for (final ItemStack itemStack : kit.items()) {
             inventory.addItem(itemStack);
         }
 
-        List<ItemStack> armor = kit.armor();
+        // ....
+        final List<ItemStack> armor = kit.armor();
         if (!armor.isEmpty()) {
             inventory.setHelmet(armor.getFirst());
         }
@@ -118,21 +120,21 @@ public final class KitService {
             inventory.setBoots(armor.get(3));
         }
 
-        for (PotionEffect effect : kit.effects()) {
+        for (final PotionEffect effect : kit.effects()) {
             player.addPotionEffect(effect);
         }
         player.updateInventory();
     }
 
-    private static List<ItemStack> parseItems(List<String> entries) {
-        List<ItemStack> parsed = new ArrayList<>();
-        for (String entry : entries) {
+    private static List<ItemStack> parseItems(final List<String> entries) {
+        final List<ItemStack> parsed = new ArrayList<>();
+        for (final String entry : entries) {
             if (entry == null || entry.isBlank()) {
                 continue;
             }
 
-            String[] parts = entry.split(":");
-            Material material = Material.matchMaterial(parts[0].trim());
+            final String[] parts = entry.split(":");
+            final Material material = Material.matchMaterial(parts[0].trim());
             if (material == null || material.isAir()) {
                 continue;
             }
@@ -148,15 +150,15 @@ public final class KitService {
         return parsed;
     }
 
-    private static List<PotionEffect> parseEffects(List<String> entries) {
-        List<PotionEffect> parsed = new ArrayList<>();
-        for (String entry : entries) {
-            String[] parts = entry.split(":");
+    private static List<PotionEffect> parseEffects(final List<String> entries) {
+        final List<PotionEffect> parsed = new ArrayList<>();
+        for (final String entry : entries) {
+            final String[] parts = entry.split(":");
             if (parts.length < 3) {
                 continue;
             }
 
-            PotionEffectType type = PotionEffectType.getByName(parts[0].trim().toUpperCase(Locale.ROOT));
+            final PotionEffectType type = PotionEffectType.getByName(parts[0].trim().toUpperCase(Locale.ROOT));
             if (type == null) {
                 continue;
             }

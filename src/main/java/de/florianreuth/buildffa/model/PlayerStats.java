@@ -77,5 +77,6 @@ public final class PlayerStats {
         }
         return (double) kills / deaths;
     }
+
 }
 

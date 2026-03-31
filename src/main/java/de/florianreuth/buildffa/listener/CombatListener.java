@@ -14,18 +14,18 @@ public final class CombatListener implements Listener {
     private final MatchService matchService;
     private final BuildService buildService;
 
-    public CombatListener(MatchService matchService, BuildService buildService) {
+    public CombatListener(final MatchService matchService, final BuildService buildService) {
         this.matchService = matchService;
         this.buildService = buildService;
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player victim)) {
+    public void onDamage(final EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof final Player victim)) {
             return;
         }
 
-        Player attacker = resolveDamager(event.getDamager());
+        final Player attacker = resolveDamager(event.getDamager());
         if (attacker == null || attacker.getUniqueId().equals(victim.getUniqueId())) {
             return;
         }
@@ -38,14 +38,14 @@ public final class CombatListener implements Listener {
         matchService.tagCombat(attacker, victim);
     }
 
-    private static Player resolveDamager(Entity damager) {
-        if (damager instanceof Player player) {
+    private static Player resolveDamager(final Entity damager) {
+        if (damager instanceof final Player player) {
             return player;
         }
-        if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player shooter) {
+        if (damager instanceof final Projectile projectile && projectile.getShooter() instanceof final Player shooter) {
             return shooter;
         }
         return null;
     }
-}
 
+}

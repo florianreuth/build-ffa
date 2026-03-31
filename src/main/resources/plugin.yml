@@ -14,9 +14,9 @@ commands:
     description: BuildFFA admin commands
     usage: /buildffa <reload|setspawn|info|buildmode>
     permission: buildffa.admin
-  ffastats:
+  stats:
     description: Show BuildFFA stats
-    usage: /ffastats [player]
+    usage: /stats [player]
   gadget:
     description: Select or list gadgets
     usage: /gadget [name|list]

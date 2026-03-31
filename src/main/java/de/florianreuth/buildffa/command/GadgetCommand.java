@@ -1,7 +1,6 @@
 package de.florianreuth.buildffa.command;
 
 import de.florianreuth.buildffa.service.GadgetService;
-import de.florianreuth.buildffa.service.GadgetService.GadgetDefinition;
 import de.florianreuth.buildffa.util.Branding;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,5 +75,6 @@ public final class GadgetCommand implements CommandExecutor, TabCompleter {
         }
         return suggestions;
     }
+
 }
 

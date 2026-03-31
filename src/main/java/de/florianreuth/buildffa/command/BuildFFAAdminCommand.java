@@ -138,5 +138,6 @@ public final class BuildFFAAdminCommand implements CommandExecutor, TabCompleter
 
         return Collections.emptyList();
     }
+
 }
 

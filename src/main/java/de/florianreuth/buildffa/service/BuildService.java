@@ -17,100 +17,98 @@ public final class BuildService {
     private final Set<UUID> buildModePlayers = ConcurrentHashMap.newKeySet();
     private final Map<Location, BukkitTask> cleanupTasks = new ConcurrentHashMap<>();
 
-    public BuildService(BuildFFA plugin) {
+    public BuildService(final BuildFFA plugin) {
         this.plugin = plugin;
     }
 
-    public boolean isBuildEnabled() {
-        return plugin.getConfig().getBoolean("build.enabled", true);
+    public boolean isBuildDisabled() {
+        return !plugin.getConfig().getBoolean("build.enabled", true);
     }
 
-    public boolean isBuildMode(UUID playerId) {
+    public boolean isBuildMode(final UUID playerId) {
         return buildModePlayers.contains(playerId);
     }
 
-    public void setBuildMode(UUID playerId, boolean enabled) {
+    public void setBuildMode(final UUID playerId, final boolean enabled) {
         if (enabled) {
             buildModePlayers.add(playerId);
-            return;
+        } else {
+            buildModePlayers.remove(playerId);
         }
-        buildModePlayers.remove(playerId);
     }
 
-    public boolean toggleBuildMode(UUID playerId) {
-        boolean enabled = !isBuildMode(playerId);
+    public boolean toggleBuildMode(final UUID playerId) {
+        final boolean enabled = !isBuildMode(playerId);
         setBuildMode(playerId, enabled);
         return enabled;
     }
 
-    public boolean isInSpawnProtection(Location location) {
+    public boolean isInSpawnProtection(final Location location) {
         if (location == null || plugin.getArenaService() == null) {
             return false;
         }
-        double radius = Math.max(0.0, plugin.getConfig().getDouble("spawn-protection.radius", 6.0));
+
+        final double radius = Math.max(0.0, plugin.getConfig().getDouble("spawn-protection.radius", 6.0));
         return plugin.getArenaService().isInSpawnProtection(location, radius);
     }
 
-    public void trackPlacement(Block block, BlockData originalState) {
-        Location key = toBlockKey(block.getLocation());
+    public void trackPlacement(final Block block, final BlockData originalState) {
+        final Location key = toBlockKey(block.getLocation());
         trackedOriginalStates.computeIfAbsent(key, ignored -> originalState.clone());
 
-        BukkitTask previous = cleanupTasks.remove(key);
+        final BukkitTask previous = cleanupTasks.remove(key);
         if (previous != null) {
             previous.cancel();
         }
 
-        long cleanupSeconds = Math.max(
-            1L,
-            plugin.getConfig().getLong("build.block-cleanup-seconds", plugin.getConfig().getLong("build.block-stable-seconds", 10L))
-        );
-        long cleanupTicks = cleanupSeconds * 20L;
+        final long cleanupSeconds = Math.max(1L, plugin.getConfig().getLong("build.block-cleanup-seconds",
+            plugin.getConfig().getLong("build.block-stable-seconds", 10L)));
+        final long cleanupTicks = cleanupSeconds * 20L;
 
-        BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        cleanupTasks.put(key, plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             cleanupTasks.remove(key);
             restoreTrackedState(key);
-        }, cleanupTicks);
-
-        cleanupTasks.put(key, task);
+        }, cleanupTicks));
     }
 
-    public boolean canBreak(Block block) {
+    public boolean canBreak(final Block block) {
         return trackedOriginalStates.containsKey(toBlockKey(block.getLocation()));
     }
 
-    public void handleBreak(Block block) {
-        Location key = toBlockKey(block.getLocation());
-        BukkitTask task = cleanupTasks.remove(key);
+    public void handleBreak(final Block block) {
+        final Location key = toBlockKey(block.getLocation());
+        final BukkitTask task = cleanupTasks.remove(key);
         if (task != null) {
             task.cancel();
         }
+
         restoreTrackedState(key);
     }
 
-    public void clearTracked(Block block) {
-        Location key = toBlockKey(block.getLocation());
+    public void clearTracked(final Block block) {
+        final Location key = toBlockKey(block.getLocation());
         trackedOriginalStates.remove(key);
-        BukkitTask task = cleanupTasks.remove(key);
+        final BukkitTask task = cleanupTasks.remove(key);
         if (task != null) {
             task.cancel();
         }
     }
 
-    private void restoreTrackedState(Location key) {
-        BlockData original = trackedOriginalStates.remove(key);
+    private void restoreTrackedState(final Location key) {
+        final BlockData original = trackedOriginalStates.remove(key);
         if (original == null) {
             return;
         }
 
-        Block block = key.getBlock();
+        final Block block = key.getBlock();
         if (!block.getBlockData().matches(original)) {
             block.setBlockData(original, true);
         }
     }
 
-    private static Location toBlockKey(Location source) {
-        org.bukkit.World world = source.getWorld();
-        return new Location(world, source.getBlockX(), source.getBlockY(), source.getBlockZ());
+    private static Location toBlockKey(final Location source) {
+        return new Location(source.getWorld(), source.getBlockX(), source.getBlockY(), source.getBlockZ());
     }
+
 }
 

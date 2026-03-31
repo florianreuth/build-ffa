@@ -24,7 +24,7 @@ public final class HudService {
     private final GadgetService gadgetService;
     private BukkitTask task;
 
-    public HudService(BuildFFA plugin, PlayerDataService playerDataService, MatchService matchService, GadgetService gadgetService) {
+    public HudService(final BuildFFA plugin, final PlayerDataService playerDataService, final MatchService matchService, final GadgetService gadgetService) {
         this.plugin = plugin;
         this.playerDataService = playerDataService;
         this.matchService = matchService;
@@ -33,7 +33,8 @@ public final class HudService {
 
     public void start() {
         stop();
-        long intervalTicks = Math.max(10L, plugin.getConfig().getLong("hud.update-ticks", 20L));
+
+        final long intervalTicks = Math.max(10L, plugin.getConfig().getLong("hud.update-ticks", 20L));
         task = Bukkit.getScheduler().runTaskTimer(plugin, this::refreshOnlinePlayers, intervalTicks, intervalTicks);
     }
 
@@ -44,26 +45,26 @@ public final class HudService {
         }
     }
 
-    public void refreshPlayer(Player player) {
+    public void refreshPlayer(final Player player) {
         updateScoreboard(player);
         updateTab(player);
         updateActionBar(player);
     }
 
     private void refreshOnlinePlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             refreshPlayer(player);
         }
     }
 
-    private void updateScoreboard(Player player) {
+    private void updateScoreboard(final Player player) {
         if (!plugin.getConfig().getBoolean("hud.scoreboard-enabled", true)) {
             return;
         }
 
-        PlayerStats stats = playerDataService.get(player.getUniqueId());
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("buildffa", Criteria.DUMMY, Component.text("BuildFFA", NamedTextColor.GOLD));
+        final PlayerStats stats = playerDataService.get(player.getUniqueId());
+        final Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        final Objective objective = scoreboard.registerNewObjective("buildffa", Criteria.DUMMY, Component.text("BuildFFA", NamedTextColor.GOLD));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         objective.getScore("§8 ").setScore(8);
@@ -78,22 +79,22 @@ public final class HudService {
         player.setScoreboard(scoreboard);
     }
 
-    private void updateTab(Player player) {
+    private void updateTab(final Player player) {
         if (!plugin.getConfig().getBoolean("hud.tab-enabled", true)) {
             return;
         }
 
-        PlayerStats stats = playerDataService.get(player.getUniqueId());
-        List<Map.Entry<UUID, PlayerStats>> top = playerDataService.getTopByKills(3);
+        final PlayerStats stats = playerDataService.get(player.getUniqueId());
+        final List<Map.Entry<UUID, PlayerStats>> top = playerDataService.getTopByKills(3);
 
-        Component header = Component
+        final Component header = Component
             .text("BuildFFA", NamedTextColor.GOLD)
             .append(Component.newline())
             .append(Component.text("Online: " + Bukkit.getOnlinePlayers().size(), NamedTextColor.GRAY));
 
         Component footer = Component.text("K: " + stats.getKills() + " D: " + stats.getDeaths(), NamedTextColor.GREEN);
         if (!top.isEmpty()) {
-            Map.Entry<UUID, PlayerStats> first = top.get(0);
+            final Map.Entry<UUID, PlayerStats> first = top.getFirst();
             String topName = Bukkit.getOfflinePlayer(first.getKey()).getName();
             if (topName == null) {
                 topName = "unknown";
@@ -111,25 +112,26 @@ public final class HudService {
             return;
         }
 
-        PlayerStats stats = playerDataService.get(player.getUniqueId());
-        long combatLeft = matchService.getCombatMillisLeft(player);
-        long gadgetCooldown = gadgetService.getSelectedCooldownMillisLeft(player);
+        final PlayerStats stats = playerDataService.get(player.getUniqueId());
+        final long combatLeft = matchService.getCombatMillisLeft(player);
+        final long gadgetCooldown = gadgetService.getSelectedCooldownMillisLeft(player);
 
-        String combatText = combatLeft > 0L ? (combatLeft / 1000L) + "s" : "ready";
-        String gadgetText = gadgetCooldown > 0L ? (gadgetCooldown / 1000L) + "s" : "ready";
+        final String combatText = combatLeft > 0L ? (combatLeft / 1000L) + "s" : "ready";
+        final String gadgetText = gadgetCooldown > 0L ? (gadgetCooldown / 1000L) + "s" : "ready";
 
         player.sendActionBar(
             Component.text(
                 "Streak " + stats.getCurrentKillStreak() +
-                " | Combat " + combatText +
-                " | Gadget " + gadgetText,
+                    " | Combat " + combatText +
+                    " | Gadget " + gadgetText,
                 NamedTextColor.AQUA
             )
         );
     }
 
-    private static String valueOrNone(String value) {
+    private static String valueOrNone(final String value) {
         return value == null || value.isBlank() ? "none" : value;
     }
+
 }
 

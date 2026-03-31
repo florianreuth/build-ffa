@@ -9,6 +9,7 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -19,54 +20,70 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import java.util.List;
 
 public final class BuildListener implements Listener {
 
     private final BuildService buildService;
 
-    public BuildListener(BuildService buildService) {
+    public BuildListener(final BuildService buildService) {
         this.buildService = buildService;
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlace(BlockPlaceEvent event) {
+    public void onPlace(final BlockPlaceEvent event) {
         if (buildService.isInSpawnProtection(event.getBlockPlaced().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("Spawn area is protected.", NamedTextColor.RED));
             return;
         }
+
         if (buildService.isBuildMode(event.getPlayer().getUniqueId())) {
             return;
         }
-        if (!buildService.isBuildEnabled()) {
+
+        if (buildService.isBuildDisabled()) {
             event.setCancelled(true);
             return;
         }
+
         buildService.trackPlacement(event.getBlockPlaced(), event.getBlockReplacedState().getBlockData());
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onBreak(BlockBreakEvent event) {
+    public void onBreak(final BlockBreakEvent event) {
         if (buildService.isInSpawnProtection(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("Spawn area is protected.", NamedTextColor.RED));
             return;
         }
+
         if (buildService.isBuildMode(event.getPlayer().getUniqueId())) {
             buildService.handleBreak(event.getBlock());
             return;
         }
+
         if (!buildService.canBreak(event.getBlock())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("You can only break player placed blocks.", NamedTextColor.RED));
             return;
         }
+
         buildService.handleBreak(event.getBlock());
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityExplode(EntityExplodeEvent event) {
-        event.blockList().removeIf(block -> {
+    public void onEntityExplode(final EntityExplodeEvent event) {
+        handleBlocks(event.blockList());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockExplode(final BlockExplodeEvent event) {
+        handleBlocks(event.blockList());
+    }
+
+    private void handleBlocks(final List<Block> blocks) {
+        blocks.removeIf(block -> {
             if (!buildService.canBreak(block)) {
                 return true;
             }
@@ -76,59 +93,52 @@ public final class BuildListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onBlockExplode(BlockExplodeEvent event) {
-        event.blockList().removeIf(block -> {
-            if (!buildService.canBreak(block)) {
-                return true;
-            }
-            buildService.handleBreak(block);
-            return false;
-        });
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        Block clicked = event.getBlockClicked();
-        Block target = clicked.getRelative(event.getBlockFace());
+    public void onBucketEmpty(final PlayerBucketEmptyEvent event) {
+        final Block clicked = event.getBlockClicked();
+        final Block target = clicked.getRelative(event.getBlockFace());
         if (buildService.isInSpawnProtection(target.getLocation()) || buildService.isInSpawnProtection(clicked.getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("Spawn area is protected.", NamedTextColor.RED));
             return;
         }
+
         if (buildService.isBuildMode(event.getPlayer().getUniqueId())) {
             return;
         }
-        if (!buildService.isBuildEnabled()) {
+        if (buildService.isBuildDisabled()) {
             event.setCancelled(true);
             return;
         }
 
         buildService.trackPlacement(target, target.getBlockData());
-        if (event.getBucket() == Material.WATER_BUCKET && clicked.getBlockData() instanceof Waterlogged waterlogged && !waterlogged.isWaterlogged()) {
+        if (event.getBucket() == Material.WATER_BUCKET && clicked.getBlockData() instanceof final Waterlogged waterlogged && !waterlogged.isWaterlogged()) {
             buildService.trackPlacement(clicked, clicked.getBlockData());
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onBucketFill(PlayerBucketFillEvent event) {
+    public void onBucketFill(final PlayerBucketFillEvent event) {
         if (buildService.isInSpawnProtection(event.getBlockClicked().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("Spawn area is protected.", NamedTextColor.RED));
             return;
         }
+
         if (buildService.isBuildMode(event.getPlayer().getUniqueId())) {
             return;
         }
+
         if (!buildService.canBreak(event.getBlockClicked())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("You cannot remove map liquids.", NamedTextColor.RED));
             return;
         }
+
         buildService.clearTracked(event.getBlockClicked());
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onFluidSpread(BlockFromToEvent event) {
+    public void onFluidSpread(final BlockFromToEvent event) {
         if (!event.getBlock().isLiquid()) {
             return;
         }
@@ -149,35 +159,37 @@ public final class BuildListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onUseItems(PlayerInteractEvent event) {
+    public void onUseItems(final PlayerInteractEvent event) {
         if (!buildService.isInSpawnProtection(event.getPlayer().getLocation())) {
             return;
         }
 
-        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR &&
-            event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
         if (!event.hasItem() && event.getClickedBlock() == null) {
             return;
         }
+
         event.setCancelled(true);
         event.getPlayer().sendActionBar(Component.text("You cannot use items near spawn.", NamedTextColor.RED));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onConsume(PlayerItemConsumeEvent event) {
+    public void onConsume(final PlayerItemConsumeEvent event) {
         if (!buildService.isInSpawnProtection(event.getPlayer().getLocation())) {
             return;
         }
+
         event.setCancelled(true);
         event.getPlayer().sendActionBar(Component.text("You cannot use items near spawn.", NamedTextColor.RED));
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(final PlayerQuitEvent event) {
         buildService.setBuildMode(event.getPlayer().getUniqueId(), false);
     }
+
 }
 

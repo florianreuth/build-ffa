@@ -58,13 +58,16 @@ public final class BuildFFA extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GadgetListener(gadgetService, buildService), this);
         getServer().getPluginManager().registerEvents(new GameplayRulesListener(), this);
 
-        KitCommand kitCommand = new KitCommand(kitService, playerDataService, matchService, gadgetService);
+        final KitCommand kitCommand = new KitCommand(kitService, playerDataService, matchService, gadgetService);
         registerCommand("kit", kitCommand, kitCommand);
-        BuildFFAAdminCommand buildFFAAdminCommand = new BuildFFAAdminCommand(this);
+
+        final BuildFFAAdminCommand buildFFAAdminCommand = new BuildFFAAdminCommand(this);
         registerCommand("buildffa", buildFFAAdminCommand, buildFFAAdminCommand);
-        StatsCommand statsCommand = new StatsCommand(playerDataService);
-        registerCommand("ffastats", statsCommand, statsCommand);
-        GadgetCommand gadgetCommand = new GadgetCommand(gadgetService);
+
+        final StatsCommand statsCommand = new StatsCommand(playerDataService);
+        registerCommand("stats", statsCommand, statsCommand);
+
+        final GadgetCommand gadgetCommand = new GadgetCommand(gadgetService);
         registerCommand("gadget", gadgetCommand, gadgetCommand);
 
         matchService.startAutosaveTask();
@@ -112,8 +115,8 @@ public final class BuildFFA extends JavaPlugin {
         return buildService;
     }
 
-    private void registerCommand(String commandName, CommandExecutor executor, TabCompleter tabCompleter) {
-        PluginCommand command = getCommand(commandName);
+    private void registerCommand(final String commandName, final CommandExecutor executor, final TabCompleter tabCompleter) {
+        final PluginCommand command = getCommand(commandName);
         if (command == null) {
             getLogger().warning("Could not register command '/" + commandName + "' (missing in plugin.yml).");
             return;
@@ -132,4 +135,5 @@ public final class BuildFFA extends JavaPlugin {
             world.setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
         });
     }
+
 }

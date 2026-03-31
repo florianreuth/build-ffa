@@ -34,12 +34,13 @@ public final class Branding {
 
     private Branding() {}
 
-    public static void send(CommandSender sender, Component message) {
+    public static void send(final CommandSender sender, final Component message) {
         sender.sendMessage(PREFIX.append(message));
     }
 
-    public static Component legacy(String text) {
-        return LEGACY.deserialize(text == null ? "" : text);
+    public static Component legacy(final String text) {
+        return LEGACY.deserialize(text);
     }
+
 }
 

@@ -19,7 +19,7 @@ public final class ArenaService {
     private final File file;
     private final List<Location> spawns = new ArrayList<>();
 
-    public ArenaService(BuildFFA plugin) {
+    public ArenaService(final BuildFFA plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "arenas.yml");
     }
@@ -30,25 +30,26 @@ public final class ArenaService {
             return;
         }
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection section = configuration.getConfigurationSection("spawns");
+        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        final ConfigurationSection section = configuration.getConfigurationSection("spawns");
         if (section == null) {
             return;
         }
 
-        for (String key : section.getKeys(false)) {
-            ConfigurationSection spawnSection = section.getConfigurationSection(key);
+        for (final String key : section.getKeys(false)) {
+            final ConfigurationSection spawnSection = section.getConfigurationSection(key);
             if (spawnSection == null) {
                 continue;
             }
-            Location location = deserializeLocation(spawnSection);
+
+            final Location location = deserializeLocation(spawnSection);
             if (location != null) {
                 spawns.add(location);
             }
         }
     }
 
-    public void addSpawn(Location location) {
+    public void addSpawn(final Location location) {
         spawns.add(location.clone());
         save();
     }
@@ -57,7 +58,8 @@ public final class ArenaService {
         if (spawns.isEmpty()) {
             return Optional.empty();
         }
-        int index = ThreadLocalRandom.current().nextInt(spawns.size());
+
+        final int index = ThreadLocalRandom.current().nextInt(spawns.size());
         return Optional.of(spawns.get(index).clone());
     }
 
@@ -65,13 +67,13 @@ public final class ArenaService {
         return spawns.size();
     }
 
-    public boolean isInSpawnProtection(Location location, double radius) {
+    public boolean isInSpawnProtection(final Location location, final double radius) {
         if (location == null || location.getWorld() == null || spawns.isEmpty() || radius <= 0.0) {
             return false;
         }
 
-        double radiusSquared = radius * radius;
-        for (Location spawn : spawns) {
+        final double radiusSquared = radius * radius;
+        for (final Location spawn : spawns) {
             if (spawn.getWorld() == null || !spawn.getWorld().equals(location.getWorld())) {
                 continue;
             }
@@ -83,21 +85,21 @@ public final class ArenaService {
     }
 
     public void save() {
-        YamlConfiguration config = new YamlConfiguration();
+        final YamlConfiguration config = new YamlConfiguration();
         for (int index = 0; index < spawns.size(); index++) {
-            Location location = spawns.get(index);
-            String path = "spawns." + index;
+            final Location location = spawns.get(index);
+            final String path = "spawns." + index;
             serializeLocation(config, path, location);
         }
 
         try {
             config.save(file);
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             plugin.getLogger().severe("Could not save arenas.yml: " + exception.getMessage());
         }
     }
 
-    private static void serializeLocation(YamlConfiguration config, String path, Location location) {
+    private static void serializeLocation(final YamlConfiguration config, final String path, final Location location) {
         config.set(path + ".world", location.getWorld() == null ? null : location.getWorld().getName());
         config.set(path + ".x", location.getX());
         config.set(path + ".y", location.getY());
@@ -106,25 +108,19 @@ public final class ArenaService {
         config.set(path + ".pitch", location.getPitch());
     }
 
-    private static Location deserializeLocation(ConfigurationSection section) {
-        String worldName = section.getString("world");
+    private static Location deserializeLocation(final ConfigurationSection section) {
+        final String worldName = section.getString("world");
         if (worldName == null) {
             return null;
         }
 
-        World world = Bukkit.getWorld(worldName);
+        final World world = Bukkit.getWorld(worldName);
         if (world == null) {
             return null;
         }
 
-        return new Location(
-            world,
-            section.getDouble("x"),
-            section.getDouble("y"),
-            section.getDouble("z"),
-            (float) section.getDouble("yaw"),
-            (float) section.getDouble("pitch")
-        );
+        return new Location(world, section.getDouble("x"), section.getDouble("y"), section.getDouble("z"),
+            (float) section.getDouble("yaw"), (float) section.getDouble("pitch"));
     }
 }
 

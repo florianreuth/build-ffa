@@ -76,5 +76,6 @@ public final class StatsCommand implements CommandExecutor, TabCompleter {
         }
         return suggestions;
     }
+
 }
 

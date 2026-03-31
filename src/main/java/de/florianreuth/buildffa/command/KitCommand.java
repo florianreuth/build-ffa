@@ -116,5 +116,6 @@ public final class KitCommand implements CommandExecutor, TabCompleter {
         }
         return suggestions;
     }
+
 }
 
