@@ -12,12 +12,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 public final class GadgetService {
@@ -144,6 +148,49 @@ public final class GadgetService {
                 fireball.setIsIncendiary(false);
                 fireball.setShooter(player);
                 fireball.setVelocity(player.getLocation().getDirection().normalize().multiply(1.2 * definition.strength()));
+            }
+            case "DASH" -> {
+                Vector vector = player.getLocation().getDirection().normalize().multiply(1.8 * definition.strength());
+                vector.setY(Math.max(0.25, 0.35 * definition.strength()));
+                player.setVelocity(vector);
+            }
+            case "BLINK" -> {
+                Location eye = player.getEyeLocation();
+                Vector direction = eye.getDirection().normalize();
+                double maxDistance = Math.max(3.0, 6.0 * definition.strength());
+
+                Location target = player.getLocation().clone().add(direction.clone().multiply(maxDistance));
+                RayTraceResult hit = player.getWorld().rayTraceBlocks(eye, direction, maxDistance);
+                if (hit != null) {
+                    target = hit.getHitPosition().toLocation(player.getWorld()).subtract(direction.clone().multiply(1.2));
+                }
+
+                if (target.getBlock().isSolid()) {
+                    target.add(0, 1, 0);
+                }
+                if (target.getBlock().isSolid()) {
+                    return false;
+                }
+
+                target.setYaw(player.getLocation().getYaw());
+                target.setPitch(player.getLocation().getPitch());
+                player.teleportAsync(target);
+                player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation().add(0, 1, 0), 16, 0.35, 0.4, 0.35, 0.02);
+            }
+            case "SHOCKWAVE" -> {
+                double radius = Math.max(2.0, 3.5 * definition.strength());
+                for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                    if (!(entity instanceof Player target) || target.getUniqueId().equals(player.getUniqueId())) {
+                        continue;
+                    }
+                    Vector knockback = target.getLocation().toVector().subtract(player.getLocation().toVector());
+                    if (knockback.lengthSquared() < 0.0001) {
+                        knockback = new Vector(0, 0, 1);
+                    }
+                    knockback.normalize().multiply(1.25 * definition.strength()).setY(0.35 * definition.strength());
+                    target.setVelocity(knockback);
+                }
+                player.getWorld().spawnParticle(Particle.EXPLOSION, player.getLocation().add(0, 1, 0), 3);
             }
             default -> {
                 return false;

@@ -30,9 +30,23 @@ permissions:
     default: true
   buildffa.kit.tank:
     default: true
+  buildffa.kit.duelist:
+    default: true
+  buildffa.kit.rogue:
+    default: true
+  buildffa.kit.raider:
+    default: true
+  buildffa.kit.bruiser:
+    default: true
   buildffa.gadget.healwand:
     default: true
   buildffa.gadget.leapfeather:
     default: true
   buildffa.gadget.fireball:
+    default: true
+  buildffa.gadget.dashboots:
+    default: true
+  buildffa.gadget.blinkpearl:
+    default: true
+  buildffa.gadget.shockcore:
     default: true

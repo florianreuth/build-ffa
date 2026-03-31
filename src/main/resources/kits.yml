@@ -50,3 +50,72 @@ kits:
       - DAMAGE_RESISTANCE:0:1000000
       - SLOWNESS:0:1000000
 
+  duelist:
+    name: '&eDuelist'
+    permission: buildffa.kit.duelist
+    items:
+      - IRON_SWORD
+      - FISHING_ROD
+      - BOW
+      - ARROW:16
+      - OAK_PLANKS:48
+      - GOLDEN_APPLE:1
+    armor:
+      - IRON_HELMET
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - IRON_BOOTS
+    effects:
+      - SPEED:0:1000000
+
+  rogue:
+    name: '&dRogue'
+    permission: buildffa.kit.rogue
+    items:
+      - STONE_SWORD
+      - ENDER_PEARL:1
+      - COBWEB:6
+      - OAK_PLANKS:40
+      - WATER_BUCKET
+    armor:
+      - LEATHER_HELMET
+      - CHAINMAIL_CHESTPLATE
+      - LEATHER_LEGGINGS
+      - CHAINMAIL_BOOTS
+    effects:
+      - SPEED:1:1000000
+
+  raider:
+    name: '&cRaider'
+    permission: buildffa.kit.raider
+    items:
+      - IRON_SWORD
+      - BOW
+      - ARROW:24
+      - OAK_PLANKS:48
+      - LADDER:24
+      - WATER_BUCKET
+    armor:
+      - CHAINMAIL_HELMET
+      - IRON_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - IRON_BOOTS
+    effects:
+      - SPEED:0:1000000
+
+  bruiser:
+    name: '&5Bruiser'
+    permission: buildffa.kit.bruiser
+    items:
+      - IRON_AXE
+      - OAK_PLANKS:36
+      - GOLDEN_APPLE:1
+      - WATER_BUCKET
+    armor:
+      - DIAMOND_HELMET
+      - IRON_CHESTPLATE
+      - IRON_LEGGINGS
+      - CHAINMAIL_BOOTS
+    effects:
+      - DAMAGE_RESISTANCE:0:1000000
+
