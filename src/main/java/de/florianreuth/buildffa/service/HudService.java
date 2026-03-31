@@ -119,14 +119,7 @@ public final class HudService {
         final String combatText = combatLeft > 0L ? (combatLeft / 1000L) + "s" : "ready";
         final String gadgetText = gadgetCooldown > 0L ? (gadgetCooldown / 1000L) + "s" : "ready";
 
-        player.sendActionBar(
-            Component.text(
-                "Streak " + stats.getCurrentKillStreak() +
-                    " | Combat " + combatText +
-                    " | Gadget " + gadgetText,
-                NamedTextColor.AQUA
-            )
-        );
+        player.sendActionBar(Component.text("Streak " + stats.getCurrentKillStreak() + " | Combat " + combatText + " | Gadget " + gadgetText, NamedTextColor.AQUA));
     }
 
     private static String valueOrNone(final String value) {

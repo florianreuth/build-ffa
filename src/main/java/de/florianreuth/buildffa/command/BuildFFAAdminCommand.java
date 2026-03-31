@@ -2,11 +2,10 @@ package de.florianreuth.buildffa.command;
 
 import de.florianreuth.buildffa.BuildFFA;
 import de.florianreuth.buildffa.util.Branding;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -103,7 +102,8 @@ public final class BuildFFAAdminCommand implements CommandExecutor, TabCompleter
                         .append(Component.text(".", NamedTextColor.GRAY))
                 );
             }
-            default -> Branding.send(sender, Component.text("Usage: /buildffa <reload|setspawn|info|buildmode>", NamedTextColor.YELLOW));
+            default ->
+                Branding.send(sender, Component.text("Usage: /buildffa <reload|setspawn|info|buildmode>", NamedTextColor.YELLOW));
         }
         return true;
     }
@@ -115,25 +115,11 @@ public final class BuildFFAAdminCommand implements CommandExecutor, TabCompleter
         }
 
         if (args.length == 1) {
-            final String prefix = args[0].toLowerCase();
-            final List<String> suggestions = new ArrayList<>();
-            for (final String option : List.of("reload", "setspawn", "info", "buildmode")) {
-                if (option.startsWith(prefix)) {
-                    suggestions.add(option);
-                }
-            }
-            return suggestions;
+            return List.of("reload", "setspawn", "info", "buildmode");
         }
 
         if (args.length == 2 && "buildmode".equalsIgnoreCase(args[0])) {
-            final String prefix = args[1].toLowerCase();
-            final List<String> suggestions = new ArrayList<>();
-            for (final String option : List.of("on", "off", "toggle", "status")) {
-                if (option.startsWith(prefix)) {
-                    suggestions.add(option);
-                }
-            }
-            return suggestions;
+            return List.of("on", "off", "toggle", "status");
         }
 
         return Collections.emptyList();

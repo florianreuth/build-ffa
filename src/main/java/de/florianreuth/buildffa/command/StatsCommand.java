@@ -66,13 +66,9 @@ public final class StatsCommand implements CommandExecutor, TabCompleter {
             return Collections.emptyList();
         }
 
-        final String prefix = args[0].toLowerCase(Locale.ROOT);
         final List<String> suggestions = new ArrayList<>();
         for (final Player online : Bukkit.getOnlinePlayers()) {
-            String name = online.getName();
-            if (name.toLowerCase(Locale.ROOT).startsWith(prefix)) {
-                suggestions.add(name);
-            }
+            suggestions.add(online.getName());
         }
         return suggestions;
     }

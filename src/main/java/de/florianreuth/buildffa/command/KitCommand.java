@@ -104,16 +104,8 @@ public final class KitCommand implements CommandExecutor, TabCompleter {
             return Collections.emptyList();
         }
 
-        final String prefix = args[0].toLowerCase(Locale.ROOT);
-        final List<String> suggestions = new ArrayList<>();
-        for (final String kitName : kitService.getKits().keySet()) {
-            if (kitName.startsWith(prefix)) {
-                suggestions.add(kitName);
-            }
-        }
-        if ("list".startsWith(prefix)) {
-            suggestions.add("list");
-        }
+        final List<String> suggestions = new ArrayList<>(kitService.getKits().keySet());
+        suggestions.add("list");
         return suggestions;
     }
 

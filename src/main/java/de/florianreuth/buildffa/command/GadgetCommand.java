@@ -59,20 +59,12 @@ public final class GadgetCommand implements CommandExecutor, TabCompleter {
             return Collections.emptyList();
         }
 
-        final String prefix = args[0].toLowerCase(Locale.ROOT);
-        final List<String> suggestions = new ArrayList<>();
         if (!(sender instanceof final Player player)) {
             return Collections.emptyList();
         }
 
-        for (final String name : gadgetService.getAvailable(player).keySet()) {
-            if (name.startsWith(prefix)) {
-                suggestions.add(name);
-            }
-        }
-        if ("list".startsWith(prefix)) {
-            suggestions.add("list");
-        }
+        final List<String> suggestions = new ArrayList<>(gadgetService.getAvailable(player).keySet());
+        suggestions.add("list");
         return suggestions;
     }
 
