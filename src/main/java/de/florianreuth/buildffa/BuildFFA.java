@@ -80,6 +80,9 @@ public final class BuildFFA extends JavaPlugin {
         if (matchService != null) {
             matchService.stopAutosaveTask();
         }
+        if (buildService != null) {
+            buildService.resetPendingPlayerChanges();
+        }
         if (hudService != null) {
             hudService.stop();
         }

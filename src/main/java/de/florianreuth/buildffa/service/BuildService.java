@@ -1,6 +1,7 @@
 package de.florianreuth.buildffa.service;
 
 import de.florianreuth.buildffa.BuildFFA;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -92,6 +93,14 @@ public final class BuildService {
         if (task != null) {
             task.cancel();
         }
+    }
+
+    public void resetPendingPlayerChanges() {
+        cleanupTasks.values().forEach(BukkitTask::cancel);
+        cleanupTasks.clear();
+
+        new ArrayList<>(trackedOriginalStates.keySet()).forEach(this::restoreTrackedState);
+        buildModePlayers.clear();
     }
 
     private void restoreTrackedState(final Location key) {
