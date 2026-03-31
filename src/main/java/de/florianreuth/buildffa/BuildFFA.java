@@ -129,6 +129,7 @@ public final class BuildFFA extends JavaPlugin {
         getServer().getWorlds().forEach(world -> {
             world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
             world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
+            world.setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
         });
     }
 }
