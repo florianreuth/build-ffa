@@ -22,7 +22,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
 public final class GameplayRulesListener implements Listener {
 
@@ -51,6 +53,18 @@ public final class GameplayRulesListener implements Listener {
             event.getCause() == EntityDamageEvent.DamageCause.CAMPFIRE ||
             event.getCause() == EntityDamageEvent.DamageCause.LAVA ||
             event.getCause() == EntityDamageEvent.DamageCause.HOT_FLOOR) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDrop(final PlayerDropItemEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPickup(final EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
             event.setCancelled(true);
         }
     }
