@@ -8,7 +8,7 @@ kits:
       - ARROW:24
       - OAK_PLANKS:64
       - COBBLESTONE:64
-      - WATER_BUCKET
+      - COBWEB:8
     armor:
       - IRON_HELMET
       - IRON_CHESTPLATE
@@ -21,7 +21,7 @@ kits:
     name: '&bArcher'
     permission: buildffa.kit.archer
     items:
-      - STONE_SWORD
+      - WOODEN_SWORD
       - BOW
       - ARROW:64
       - COBWEB:8
@@ -38,9 +38,9 @@ kits:
     name: '&6Tank'
     permission: buildffa.kit.tank
     items:
-      - IRON_SWORD
+      - COPPER_SWORD
       - OAK_PLANKS:32
-      - GOLDEN_APPLE:2
+      - GOLDEN_APPLE:1
     armor:
       - DIAMOND_HELMET
       - IRON_CHESTPLATE
@@ -73,10 +73,9 @@ kits:
     permission: buildffa.kit.rogue
     items:
       - STONE_SWORD
-      - ENDER_PEARL:1
+      - ENDER_PEARL:2
       - COBWEB:6
       - OAK_PLANKS:40
-      - WATER_BUCKET
     armor:
       - LEATHER_HELMET
       - CHAINMAIL_CHESTPLATE
@@ -94,7 +93,6 @@ kits:
       - ARROW:24
       - OAK_PLANKS:48
       - LADDER:24
-      - WATER_BUCKET
     armor:
       - CHAINMAIL_HELMET
       - IRON_CHESTPLATE
@@ -107,10 +105,9 @@ kits:
     name: '&5Bruiser'
     permission: buildffa.kit.bruiser
     items:
-      - IRON_AXE
+      - STONE_AXE
       - OAK_PLANKS:36
       - GOLDEN_APPLE:1
-      - WATER_BUCKET
     armor:
       - DIAMOND_HELMET
       - IRON_CHESTPLATE
@@ -119,3 +116,83 @@ kits:
     effects:
       - DAMAGE_RESISTANCE:0:1000000
 
+  triton:
+    name: '&3Triton'
+    permission: buildffa.kit.triton
+    items:
+      - TRIDENT
+      - OAK_PLANKS:64
+      - COBWEB:8
+    armor:
+      - CHAINMAIL_HELMET
+      - IRON_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - IRON_BOOTS
+    effects:
+      - SPEED:0:1000000
+
+  spearman:
+    name: '&eSpearman'
+    permission: buildffa.kit.spearman
+    items:
+      - IRON_SPEAR
+      - SHIELD
+      - OAK_PLANKS:48
+      - COBWEB:6
+    armor:
+      - IRON_HELMET
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - CHAINMAIL_BOOTS
+    effects:
+      - SPEED:0:1000000
+
+  sniper:
+    name: '&2Sniper'
+    permission: buildffa.kit.sniper
+    items:
+      - STONE_SWORD
+      - CROSSBOW
+      - ARROW:32
+      - OAK_PLANKS:32
+      - COBWEB:4
+    armor:
+      - LEATHER_HELMET
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - LEATHER_BOOTS
+    effects:
+      - SPEED:0:1000000
+      - JUMP_BOOST:0:1000000
+
+  phantom:
+    name: '&8Phantom'
+    permission: buildffa.kit.phantom
+    items:
+      - IRON_SWORD
+      - OAK_PLANKS:32
+      - GOLDEN_APPLE:1
+    armor:
+      - LEATHER_HELMET
+      - LEATHER_CHESTPLATE
+      - LEATHER_LEGGINGS
+      - LEATHER_BOOTS
+    effects:
+      - INVISIBILITY:0:1000000
+      - SPEED:1:1000000
+
+  fisher:
+    name: '&9Fisher'
+    permission: buildffa.kit.fisher
+    items:
+      - STONE_SWORD
+      - FISHING_ROD
+      - OAK_PLANKS:48
+      - COBWEB:12
+    armor:
+      - CHAINMAIL_HELMET
+      - LEATHER_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - CHAINMAIL_BOOTS
+    effects:
+      - SPEED:1:1000000

@@ -2,7 +2,7 @@ name: BuildFFA
 version: ${version}
 main: de.florianreuth.buildffa.BuildFFA
 description: ${description}
-authors: [ EnZaXD, leycm, yyuh ]
+authors: [ EnZaXD, leycm, yyuh, Riesenrad ]
 website: https://github.com/florianreuth/build-ffa
 api-version: '1.21'
 
