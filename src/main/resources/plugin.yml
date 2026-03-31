@@ -1,7 +1,38 @@
-name: build-ffa
+name: BuildFFA
 version: ${version}
 main: de.florianreuth.buildffa.BuildFFA
 description: ${description}
 author: EnZaXD
 website: https://github.com/florianreuth/build-ffa
-api-version: '1.21.11'
+api-version: '1.21'
+
+commands:
+  kit:
+    description: Select or list kits
+    usage: /kit [name|list]
+  buildffa:
+    description: BuildFFA admin commands
+    usage: /buildffa <reload|setspawn|info|buildmode>
+    permission: buildffa.admin
+  ffastats:
+    description: Show BuildFFA stats
+    usage: /ffastats [player]
+  gadget:
+    description: Select or list gadgets
+    usage: /gadget [name|list]
+
+permissions:
+  buildffa.admin:
+    default: op
+  buildffa.kit.archer:
+    default: true
+  buildffa.kit.builder:
+    default: true
+  buildffa.kit.tank:
+    default: true
+  buildffa.gadget.healwand:
+    default: true
+  buildffa.gadget.leapfeather:
+    default: true
+  buildffa.gadget.fireball:
+    default: true

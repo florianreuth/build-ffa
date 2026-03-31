@@ -1,0 +1,52 @@
+kits:
+  builder:
+    name: '&aBuilder'
+    permission: buildffa.kit.builder
+    items:
+      - STONE_SWORD
+      - BOW
+      - ARROW:24
+      - OAK_PLANKS:64
+      - COBBLESTONE:64
+      - WATER_BUCKET
+    armor:
+      - IRON_HELMET
+      - IRON_CHESTPLATE
+      - IRON_LEGGINGS
+      - IRON_BOOTS
+    effects:
+      - SPEED:0:1000000
+
+  archer:
+    name: '&bArcher'
+    permission: buildffa.kit.archer
+    items:
+      - STONE_SWORD
+      - BOW
+      - ARROW:64
+      - COBWEB:8
+      - OAK_PLANKS:32
+    armor:
+      - CHAINMAIL_HELMET
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - CHAINMAIL_BOOTS
+    effects:
+      - SPEED:1:1000000
+
+  tank:
+    name: '&6Tank'
+    permission: buildffa.kit.tank
+    items:
+      - IRON_SWORD
+      - OAK_PLANKS:32
+      - GOLDEN_APPLE:2
+    armor:
+      - DIAMOND_HELMET
+      - IRON_CHESTPLATE
+      - IRON_LEGGINGS
+      - DIAMOND_BOOTS
+    effects:
+      - DAMAGE_RESISTANCE:0:1000000
+      - SLOWNESS:0:1000000
+

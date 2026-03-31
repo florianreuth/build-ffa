@@ -1,0 +1,53 @@
+default-kit: builder
+autosave-seconds: 120
+killstreak-announce-every: 5
+
+rewards:
+  heal-on-kill: true
+  golden-apple-every-streak: 5
+
+build:
+  enabled: true
+  block-cleanup-seconds: 10
+
+spawn-protection:
+  radius: 6
+
+hud:
+  update-ticks: 20
+  scoreboard-enabled: true
+  tab-enabled: true
+  actionbar-enabled: true
+
+gadgets:
+  healwand:
+    enabled: true
+    display-name: Heal Wand
+    type: heal
+    material: BLAZE_ROD
+    slot: 7
+    cooldown-seconds: 20
+    strength: 1.0
+    amount: 1
+    permission: buildffa.gadget.healwand
+  leapfeather:
+    enabled: true
+    display-name: Leap Feather
+    type: leap
+    material: FEATHER
+    slot: 7
+    cooldown-seconds: 12
+    strength: 1.0
+    amount: 1
+    permission: buildffa.gadget.leapfeather
+  fireball:
+    enabled: true
+    display-name: Fireball Staff
+    type: fireball
+    material: FIRE_CHARGE
+    slot: 7
+    cooldown-seconds: 18
+    strength: 1.0
+    amount: 1
+    permission: buildffa.gadget.fireball
+
