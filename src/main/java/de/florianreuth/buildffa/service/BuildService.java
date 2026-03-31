@@ -104,7 +104,7 @@ public final class BuildService {
 
         Block block = key.getBlock();
         if (!block.getBlockData().matches(original)) {
-            block.setBlockData(original, false);
+            block.setBlockData(original, true);
         }
     }
 
