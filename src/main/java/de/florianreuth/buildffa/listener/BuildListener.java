@@ -163,12 +163,11 @@ public final class BuildListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onUseItems(final PlayerInteractEvent event) {
-        final var clickedBlock = event.getClickedBlock();
+        final Block clickedBlock = event.getClickedBlock();
 
-        if (clickedBlock != null &&
-                clickedBlock.getType().name().contains("TRAPDOOR") &&
-                !buildService.isBuildDisabled()) {
-            event.getPlayer().sendRichMessage("<red>You cannot open trapdoors!");
+        if (clickedBlock != null && clickedBlock.getType().name().contains("TRAPDOOR")
+                && !buildService.isBuildDisabled()) {
+            event.getPlayer().sendActionBar(Component.text("You cannot open trapdoors!", NamedTextColor.RED));
             return;
         }
 
