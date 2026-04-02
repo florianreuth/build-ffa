@@ -1,6 +1,7 @@
 package de.florianreuth.buildffa.listener;
 
 import de.florianreuth.buildffa.service.BuildService;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -10,17 +11,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import java.util.List;
 
 public final class BuildListener implements Listener {
 
@@ -160,6 +160,17 @@ public final class BuildListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onUseItems(final PlayerInteractEvent event) {
+        if (buildService.isBuildMode(event.getPlayer().getUniqueId())) {
+            return;
+        }
+
+        final Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock != null && clickedBlock.getType().name().endsWith("TRAPDOOR")) {
+            event.getPlayer().sendActionBar(Component.text("You cannot open trapdoors!", NamedTextColor.RED));
+            event.setCancelled(true);
+            return;
+        }
+
         if (!buildService.isInSpawnProtection(event.getPlayer().getLocation())) {
             return;
         }
@@ -168,7 +179,7 @@ public final class BuildListener implements Listener {
             return;
         }
 
-        if (!event.hasItem() && event.getClickedBlock() == null) {
+        if (!event.hasItem() && clickedBlock == null) {
             return;
         }
 
@@ -192,4 +203,3 @@ public final class BuildListener implements Listener {
     }
 
 }
-
