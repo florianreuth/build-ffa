@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public final class PlayerLifecycleListener implements Listener {
@@ -60,15 +61,10 @@ public final class PlayerLifecycleListener implements Listener {
             killer = matchService.resolveRecentAttacker(victim);
         }
 
-        matchService.handleDeath(victim);
-        if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
-            final int streak = matchService.handleKill(killer);
-            Branding.send(killer, Component.text("Kill +1 | Streak: " + streak, NamedTextColor.GREEN));
-            Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
-                .append(Component.text(" killed ", NamedTextColor.GRAY))
-                .append(Component.text(victim.getName(), NamedTextColor.YELLOW)));
-            hudService.refreshPlayer(killer);
-        }
+        matchService.handleDeath(victim, killer);
+        awardKill(victim, killer,
+            Component.text("Kill +1 | Streak: ", NamedTextColor.GREEN),
+            Component.text(" killed ", NamedTextColor.GRAY));
         hudService.refreshPlayer(victim);
 
         event.getDrops().clear();
@@ -88,21 +84,48 @@ public final class PlayerLifecycleListener implements Listener {
         event.setCancelled(true);
 
         final Player killer = matchService.resolveRecentAttacker(victim);
-        matchService.handleDeath(victim);
-
-        if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
-            final int streak = matchService.handleKill(killer);
-            Branding.send(killer, Component.text("Void kill +1 | Streak: " + streak, NamedTextColor.GREEN));
-            Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
-                .append(Component.text(" knocked ", NamedTextColor.GRAY))
-                .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
-                .append(Component.text(" into the void", NamedTextColor.GRAY)));
-            hudService.refreshPlayer(killer);
-        }
+        matchService.handleDeath(victim, killer);
+        awardKill(victim, killer,
+            Component.text("Void kill +1 | Streak: ", NamedTextColor.GREEN),
+            Component.text(" knocked ", NamedTextColor.GRAY),
+            Component.text(" into the void", NamedTextColor.GRAY));
 
         matchService.preparePlayer(victim, true);
         gadgetService.giveSelectedGadget(victim);
         hudService.refreshPlayer(victim);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onQuit(final PlayerQuitEvent event) {
+        final Player victim = event.getPlayer();
+        if (victim.isDead()) {
+            matchService.clearCombatState(victim);
+            return;
+        }
+
+        final boolean disconnectedInVoid = victim.getLocation().getY() <= victim.getWorld().getMinHeight();
+        final boolean disconnectedInCombat = matchService.isInCombat(victim);
+        final Player killer = matchService.resolveRecentAttacker(victim);
+
+        if (!disconnectedInVoid && !disconnectedInCombat) {
+            matchService.clearCombatState(victim);
+            return;
+        }
+
+        matchService.handleDeath(victim, killer);
+
+        if (killer == null || killer.getUniqueId().equals(victim.getUniqueId())) {
+            return;
+        }
+
+        final int streak = matchService.handleKill(killer);
+        final String reason = disconnectedInVoid ? "disconnected in the void" : "combat logged";
+        Branding.send(killer, Component.text("Logout kill +1 | Streak: " + streak, NamedTextColor.GREEN));
+        Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
+            .append(Component.text(" was awarded a kill after ", NamedTextColor.GRAY))
+            .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
+            .append(Component.text(" " + reason, NamedTextColor.GRAY)));
+        hudService.refreshPlayer(killer);
     }
 
     @EventHandler
@@ -116,5 +139,29 @@ public final class PlayerLifecycleListener implements Listener {
             gadgetService.giveSelectedGadget(player);
             hudService.refreshPlayer(player);
         }, 1L);
+    }
+
+    private void awardKill(final Player victim, final Player killer, final Component killerMessagePrefix, final Component action) {
+        awardKill(victim, killer, killerMessagePrefix, action, Component.empty());
+    }
+
+    private void awardKill(
+        final Player victim,
+        final Player killer,
+        final Component killerMessagePrefix,
+        final Component action,
+        final Component suffix
+    ) {
+        if (killer == null || killer.getUniqueId().equals(victim.getUniqueId())) {
+            return;
+        }
+
+        final int streak = matchService.handleKill(killer);
+        Branding.send(killer, killerMessagePrefix.append(Component.text(streak, NamedTextColor.GREEN)));
+        Bukkit.getServer().broadcast(Branding.PREFIX.append(Component.text(killer.getName(), NamedTextColor.RED))
+            .append(action)
+            .append(Component.text(victim.getName(), NamedTextColor.YELLOW))
+            .append(suffix));
+        hudService.refreshPlayer(killer);
     }
 }

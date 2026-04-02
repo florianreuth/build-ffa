@@ -26,7 +26,7 @@ public final class MatchService {
     private final ArenaService arenaService;
     private final PlayerDataService playerDataService;
     private final Map<UUID, Long> combatTags = new ConcurrentHashMap<>();
-    private final Map<UUID, UUID> lastAttackers = new ConcurrentHashMap<>();
+    private final Map<UUID, UUID> recentOpponents = new ConcurrentHashMap<>();
     private BukkitTask autosaveTask;
 
     public MatchService(final BuildFFA plugin, final KitService kitService, final ArenaService arenaService, final PlayerDataService playerDataService) {
@@ -112,39 +112,41 @@ public final class MatchService {
         return currentStreak;
     }
 
-    public void handleDeath(final Player victim) {
+    public void handleDeath(final Player victim, final Player killer) {
         playerDataService.get(victim.getUniqueId()).recordDeath();
-        combatTags.remove(victim.getUniqueId());
-        lastAttackers.remove(victim.getUniqueId());
+        clearCombatState(victim.getUniqueId());
+        if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
+            clearCombatStateIfLinked(killer.getUniqueId(), victim.getUniqueId());
+        }
     }
 
     public void tagCombat(final Player first, final Player second) {
         final long now = System.currentTimeMillis();
         combatTags.put(first.getUniqueId(), now);
         combatTags.put(second.getUniqueId(), now);
-        lastAttackers.put(second.getUniqueId(), first.getUniqueId());
+        recentOpponents.put(first.getUniqueId(), second.getUniqueId());
+        recentOpponents.put(second.getUniqueId(), first.getUniqueId());
     }
 
     public Player resolveRecentAttacker(final Player victim) {
-        final UUID attackerId = lastAttackers.get(victim.getUniqueId());
-        if (attackerId == null || attackerId.equals(victim.getUniqueId())) {
+        final UUID opponentId = recentOpponents.get(victim.getUniqueId());
+        if (opponentId == null || opponentId.equals(victim.getUniqueId())) {
             return null;
         }
 
         final Long taggedAt = combatTags.get(victim.getUniqueId());
         if (taggedAt == null) {
-            lastAttackers.remove(victim.getUniqueId());
+            clearCombatState(victim.getUniqueId());
             return null;
         }
 
         final long age = System.currentTimeMillis() - taggedAt;
         if (age > COMBAT_TAG_MILLIS) {
-            combatTags.remove(victim.getUniqueId());
-            lastAttackers.remove(victim.getUniqueId());
+            clearCombatState(victim.getUniqueId());
             return null;
         }
 
-        final Player attacker = Bukkit.getPlayer(attackerId);
+        final Player attacker = Bukkit.getPlayer(opponentId);
         if (attacker == null || !attacker.isOnline()) {
             return null;
         } else {
@@ -160,12 +162,15 @@ public final class MatchService {
 
         final long age = System.currentTimeMillis() - taggedAt;
         if (age > COMBAT_TAG_MILLIS) {
-            combatTags.remove(player.getUniqueId());
-            lastAttackers.remove(player.getUniqueId());
+            clearCombatState(player.getUniqueId());
             return false;
         }
 
         return true;
+    }
+
+    public void clearCombatState(final Player player) {
+        clearCombatState(player.getUniqueId());
     }
 
     public long getCombatMillisLeft(final Player player) {
@@ -176,6 +181,25 @@ public final class MatchService {
 
         final long left = COMBAT_TAG_MILLIS - (System.currentTimeMillis() - taggedAt);
         return Math.max(0L, left);
+    }
+
+    private void clearCombatState(final UUID playerId) {
+        combatTags.remove(playerId);
+
+        final UUID opponentId = recentOpponents.remove(playerId);
+        if (opponentId == null) {
+            return;
+        }
+
+        if (playerId.equals(recentOpponents.get(opponentId))) {
+            recentOpponents.remove(opponentId);
+        }
+    }
+
+    private void clearCombatStateIfLinked(final UUID playerId, final UUID expectedOpponentId) {
+        if (expectedOpponentId.equals(recentOpponents.get(playerId))) {
+            clearCombatState(playerId);
+        }
     }
 
 }
