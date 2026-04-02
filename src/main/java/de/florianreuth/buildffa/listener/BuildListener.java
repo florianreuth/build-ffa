@@ -65,7 +65,8 @@ public final class BuildListener implements Listener {
 
         if (!buildService.canBreak(event.getBlock())) {
             event.setCancelled(true);
-            event.getPlayer().sendActionBar(Component.text("You can only break player placed blocks.", NamedTextColor.RED));
+            event.getPlayer()
+                    .sendActionBar(Component.text("You can only break player placed blocks.", NamedTextColor.RED));
             return;
         }
 
@@ -96,7 +97,8 @@ public final class BuildListener implements Listener {
     public void onBucketEmpty(final PlayerBucketEmptyEvent event) {
         final Block clicked = event.getBlockClicked();
         final Block target = clicked.getRelative(event.getBlockFace());
-        if (buildService.isInSpawnProtection(target.getLocation()) || buildService.isInSpawnProtection(clicked.getLocation())) {
+        if (buildService.isInSpawnProtection(target.getLocation())
+                || buildService.isInSpawnProtection(clicked.getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendActionBar(Component.text("Spawn area is protected.", NamedTextColor.RED));
             return;
@@ -111,7 +113,8 @@ public final class BuildListener implements Listener {
         }
 
         buildService.trackPlacement(target, target.getBlockData());
-        if (event.getBucket() == Material.WATER_BUCKET && clicked.getBlockData() instanceof final Waterlogged waterlogged && !waterlogged.isWaterlogged()) {
+        if (event.getBucket() == Material.WATER_BUCKET
+                && clicked.getBlockData() instanceof final Waterlogged waterlogged && !waterlogged.isWaterlogged()) {
             buildService.trackPlacement(clicked, clicked.getBlockData());
         }
     }
@@ -160,6 +163,15 @@ public final class BuildListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onUseItems(final PlayerInteractEvent event) {
+        final var clickedBlock = event.getClickedBlock();
+
+        if (clickedBlock != null &&
+                clickedBlock.getType().name().contains("TRAPDOOR") &&
+                !buildService.isBuildDisabled()) {
+            event.getPlayer().sendRichMessage("<red>You cannot open trapdoors!");
+            return;
+        }
+
         if (!buildService.isInSpawnProtection(event.getPlayer().getLocation())) {
             return;
         }
@@ -168,7 +180,7 @@ public final class BuildListener implements Listener {
             return;
         }
 
-        if (!event.hasItem() && event.getClickedBlock() == null) {
+        if (!event.hasItem() && clickedBlock == null) {
             return;
         }
 
@@ -192,4 +204,3 @@ public final class BuildListener implements Listener {
     }
 
 }
-
