@@ -1,6 +1,7 @@
 # Build FFA
 
-A Paper plugin focused on fast-paced BuildFFA gameplay with configurable kits, arena spawns, persistent stats, combat tagging, and automatic placed-block cleanup.
+A Paper plugin focused on fast-paced BuildFFA gameplay with configurable kits, arena spawns, persistent stats, combat
+tagging, and automatic placed-block cleanup.
 
 ## Features
 
@@ -26,15 +27,7 @@ A Paper plugin focused on fast-paced BuildFFA gameplay with configurable kits, a
 3. Join as admin and add arena spawns with `/buildffa setspawn`.
 4. Optionally edit `kits.yml` and `config.yml`, then run `/buildffa reload`.
 
-## Downloads
-
-You can download the latest jar file
-from [my build server](https://build.florianreuth.de/job/build-ffa), [GitHub Actions](https://github.com/florianreuth/build-ffa/actions)
-or use the [releases tab](https://github.com/florianreuth/build-ffa/releases).
-
 ## Contact
 
-If you encounter any issues, please report them on the
-[issue tracker](https://github.com/florianreuth/build-ffa/issues).
-If you just want to talk or need help with build-ffa, feel free to join my
-[Discord](http://florianreuth.de/discord).
+- Issues: https://github.com/florianreuth/build-ffa/issues
+- Discord: https://florianreuth.de/discord
